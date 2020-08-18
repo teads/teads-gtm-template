@@ -33,15 +33,15 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "RADIO",
     "name": "accountType",
-    "displayName": "I buy from",
+    "displayName": "I have a Teads",
     "radioItems": [
       {
         "value": "tam",
-        "displayValue": "Teads Ad manager"
+        "displayValue": "Pixel ID"
       },
       {
         "value": "ms",
-        "displayValue": "Managed services"
+        "displayValue": "Advertiser ID"
       }
     ],
     "simpleValueType": true
@@ -49,15 +49,15 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "TEXT",
     "name": "pixelId",
-    "displayName": "Teads Pixel ID",
+    "displayName": "Teads Identifier",
     "simpleValueType": true,
-    "notSetText": "You need to specify your Pixel ID",
+    "notSetText": "You need to specify your Teads ID",
     "valueValidators": [
       {
         "type": "NON_EMPTY"
       },
       {
-        "type": "NUMBER"
+        "type": "POSITIVE_NUMBER"
       }
     ],
     "enablingConditions": [
@@ -66,7 +66,8 @@ ___TEMPLATE_PARAMETERS___
         "paramValue": "",
         "type": "PRESENT"
       }
-    ]
+    ],
+    "valueHint": "1234"
   },
   {
     "type": "RADIO",
@@ -75,11 +76,11 @@ ___TEMPLATE_PARAMETERS___
     "radioItems": [
       {
         "value": "base",
-        "displayValue": "Base Pixel"
+        "displayValue": "Teads Universal Pixel"
       },
       {
         "value": "event",
-        "displayValue": "Event Pixel"
+        "displayValue": "Event based Pixel"
       }
     ],
     "simpleValueType": true
@@ -89,14 +90,14 @@ ___TEMPLATE_PARAMETERS___
     "name": "conversionName",
     "displayName": "Conversion Name",
     "simpleValueType": true,
+    "help": "Enter the name of the conversion, as created in Teads interface",
     "enablingConditions": [
       {
         "paramName": "pixelType",
         "paramValue": "event",
         "type": "EQUALS"
       }
-    ],
-    "help": "Enter the name of the conversion, as created in Teads interface"
+    ]
   }
 ]
 
@@ -115,10 +116,10 @@ injectScript(url, data.gtmOnSuccess, data.gtmOnFailure, url);
 const teadsE = createQueue('teads_e');
 const pixelId = makeNumber(data.pixelId);
 
-if(data.accountType === 'tam') {
-  setInWindow('teads_buyer_pixel_id', pixelId);
+if (data.accountType === 'tam') {
+  setInWindow('teads_buyer_pixel_id', pixelId, true);
 } else if (data.accountType === 'ms') {
-  setInWindow('teads_adv_id', pixelId);
+  setInWindow('teads_adv_id', pixelId, true);
 }
 
 if (data.conversionType) {
@@ -257,6 +258,45 @@ ___WEB_PERMISSIONS___
                     "boolean": true
                   }
                 ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "referrer_test"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  }
+                ]
               }
             ]
           }
@@ -304,6 +344,6 @@ scenarios: []
 
 ___NOTES___
 
-Created on 13/07/2020 à 08:45:10
+Created on 18/08/2020, 09:33:29
 
 
