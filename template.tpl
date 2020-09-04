@@ -97,6 +97,11 @@ ___TEMPLATE_PARAMETERS___
         "paramValue": "event",
         "type": "EQUALS"
       }
+    ],
+    "valueValidators": [
+      {
+        "type": "NON_EMPTY"
+      }
     ]
   }
 ]
