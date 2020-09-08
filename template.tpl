@@ -14,7 +14,13 @@ ___INFO___
   "version": 1,
   "securityGroups": [],
   "displayName": "Teads",
-  "categories": ["ADVERTISING", "ATTRIBUTION", "CONVERSIONS", "LEAD_GENERATION", "REMARKETING"],
+  "categories": [
+    "ADVERTISING",
+    "ATTRIBUTION",
+    "CONVERSIONS",
+    "LEAD_GENERATION",
+    "REMARKETING"
+  ],
   "brand": {
     "id": "brand_dummy",
     "displayName": "",
@@ -103,6 +109,13 @@ ___TEMPLATE_PARAMETERS___
         "type": "NON_EMPTY"
       }
     ]
+  },
+  {
+    "type": "CHECKBOX",
+    "name": "disableTimeOnSiteTracking",
+    "checkboxText": "Disable time on site tracking",
+    "simpleValueType": true,
+    "displayName": "Options"
   }
 ]
 
@@ -125,6 +138,10 @@ if (data.accountType === 'tam') {
   setInWindow('teads_buyer_pixel_id', pixelId, true);
 } else if (data.accountType === 'ms') {
   setInWindow('teads_adv_id', pixelId, true);
+}
+
+if (data.disableTimeOnSiteTracking) {
+  setInWindow('disable_time_on_site_tracking', 'true', true);
 }
 
 if (data.conversionType) {
@@ -288,6 +305,45 @@ ___WEB_PERMISSIONS___
                   {
                     "type": 1,
                     "string": "referrer_test"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "disable_time_on_site_tracking"
                   },
                   {
                     "type": 8,
