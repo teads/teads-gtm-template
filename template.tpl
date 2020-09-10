@@ -113,9 +113,10 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "CHECKBOX",
     "name": "disableTimeOnSiteTracking",
-    "checkboxText": "Disable time on site tracking",
+    "checkboxText": "Disable optimization on time spent",
     "simpleValueType": true,
-    "displayName": "Options"
+    "displayName": "Option",
+    "help": "Ticking this box will disable pixel\u0027s capability to track time spent on a given page and consequently limit Teads optimization capabilities"
   }
 ]
 
