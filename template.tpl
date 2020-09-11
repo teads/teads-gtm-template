@@ -1,4 +1,4 @@
-﻿___TERMS_OF_SERVICE___
+___TERMS_OF_SERVICE___
 
 By creating or modifying this file you agree to Google Tag Manager's Community
 Template Gallery Developer Terms of Service available at
@@ -142,7 +142,7 @@ if (data.accountType === 'tam') {
 }
 
 if (data.disableTimeOnSiteTracking) {
-  setInWindow('disable_time_on_site_tracking', 'true', true);
+  setInWindow('teads_disable_time_on_site_tracking', 'true', true);
 }
 
 if (data.conversionType) {
@@ -344,7 +344,7 @@ ___WEB_PERMISSIONS___
                 "mapValue": [
                   {
                     "type": 1,
-                    "string": "disable_time_on_site_tracking"
+                    "string": "teads_disable_time_on_site_tracking"
                   },
                   {
                     "type": 8,
