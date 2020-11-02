@@ -1,10 +1,12 @@
 homepage: "https://www.teads.com"
 documentation: "https://support.teads.tv/support/solutions/articles/36000224363-introduction-to-events-management"
 versions:
-  # Latest version
-  - sha: 02bf49813396c900a5a824c45848e7aa3f9b52d4
+# Latest version
+  - sha: d44bc1cd28feaf4e3c6cf8599ed7d2fd3b4fd155
     changeNotes: Fix condition for event based conversion trigger
   # Older versions
+  - sha: 02bf49813396c900a5a824c45848e7aa3f9b52d4
+    changeNotes: Fix condition for event based conversion trigger
   - sha: c3736b50ca620fe06c6348555f928b0efcff5843
     changeNotes: Disable Time on Site tracking with Prefix
   - sha: b6a923982dcf309f6562ec9993091c61612d2d62
