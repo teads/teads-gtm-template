@@ -1,0 +1,6 @@
+homepage: "https://www.teads.com"
+documentation: "https://support.teads.tv/support/solutions/articles/36000313709-teads-analytics-tag-for-publishers"
+versions:
+  # Latest version
+  - sha: 76c66b6344ab36f840e203a766b467f199f28df6
+    changeNotes: Initial release.
