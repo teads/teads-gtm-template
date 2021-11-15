@@ -1,4 +1,4 @@
-___TERMS_OF_SERVICE___
+﻿___TERMS_OF_SERVICE___
 
 By creating or modifying this file you agree to Google Tag Manager's Community
 Template Gallery Developer Terms of Service available at
@@ -112,11 +112,11 @@ ___TEMPLATE_PARAMETERS___
   },
   {
     "type": "CHECKBOX",
-    "name": "disableTimeOnSiteTracking",
-    "checkboxText": "Disable optimization on time spent",
+    "name": "disableFirstPartyCookie",
+    "checkboxText": "Disable First Party Cookie",
     "simpleValueType": true,
     "displayName": "Option",
-    "help": "Ticking this box will disable pixel\u0027s capability to track time spent on a given page and consequently limit Teads optimization capabilities"
+    "help": "Ticking this box will disable pixel\u0027s capability to match conversions and improve your campaigns."
   }
 ]
 
@@ -135,14 +135,16 @@ injectScript(url, data.gtmOnSuccess, data.gtmOnFailure, url);
 const teadsE = createQueue('teads_e');
 const pixelId = makeNumber(data.pixelId);
 
+setInWindow('teads_env', 'js-gtm', true);
+
 if (data.accountType === 'tam') {
   setInWindow('teads_buyer_pixel_id', pixelId, true);
 } else if (data.accountType === 'ms') {
   setInWindow('teads_adv_id', pixelId, true);
 }
 
-if (data.disableTimeOnSiteTracking) {
-  setInWindow('teads_disable_time_on_site_tracking', 'true', true);
+if (data.disableFirstPartyCookie) {
+  setInWindow('teads_disable_first_party_cookie', 'true', true);
 }
 
 if (data.conversionName) {
@@ -305,7 +307,7 @@ ___WEB_PERMISSIONS___
                 "mapValue": [
                   {
                     "type": 1,
-                    "string": "referrer_test"
+                    "string": "teads_disable_first_party_cookie"
                   },
                   {
                     "type": 8,
@@ -344,7 +346,7 @@ ___WEB_PERMISSIONS___
                 "mapValue": [
                   {
                     "type": 1,
-                    "string": "teads_disable_time_on_site_tracking"
+                    "string": "teads_env"
                   },
                   {
                     "type": 8,
