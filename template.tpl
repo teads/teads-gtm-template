@@ -111,6 +111,35 @@ ___TEMPLATE_PARAMETERS___
     ]
   },
   {
+    "type": "GROUP",
+    "name": "conversionParameters",
+    "displayName": "Advanced conversion tracking",
+    "groupStyle": "ZIPPY_CLOSED",
+    "subParams": [
+      {
+        "type": "TEXT",
+        "name": "price",
+        "displayName": "Price",
+        "simpleValueType": true,
+        "help": "Set the `price` parameter when a user completes an action on-site that is valuable for your business. The value should be a decimal number, formatted as a string with no currency symbols or commas."
+      },
+      {
+        "type": "TEXT",
+        "name": "currency",
+        "displayName": "Currency",
+        "simpleValueType": true,
+        "help": "Set the `currency` parameter only when you optionally set a `price` parameter. The parameter should be an ISO 4217 currency code. Example: EUR"
+      }
+    ],
+    "enablingConditions": [
+      {
+        "paramName": "pixelType",
+        "paramValue": "event",
+        "type": "EQUALS"
+      }
+    ]
+  },
+  {
     "type": "CHECKBOX",
     "name": "disableFirstPartyCookie",
     "checkboxText": "Disable First Party Cookie",
@@ -128,6 +157,9 @@ const setInWindow = require('setInWindow');
 const createQueue = require('createQueue');
 const makeNumber = require('makeNumber');
 
+// Init.
+setInWindow('teads_env', 'js-gtm', true);
+var event = {};
 const url = 'https://p.teads.tv/teads-fellow.js';
 
 injectScript(url, data.gtmOnSuccess, data.gtmOnFailure, url);
@@ -135,21 +167,39 @@ injectScript(url, data.gtmOnSuccess, data.gtmOnFailure, url);
 const teadsE = createQueue('teads_e');
 const pixelId = makeNumber(data.pixelId);
 
-setInWindow('teads_env', 'js-gtm', true);
-
+// Set account type.
 if (data.accountType === 'tam') {
   setInWindow('teads_buyer_pixel_id', pixelId, true);
 } else if (data.accountType === 'ms') {
   setInWindow('teads_adv_id', pixelId, true);
 }
 
+// Set first-party cookie.
 if (data.disableFirstPartyCookie) {
   setInWindow('teads_disable_first_party_cookie', 'true', true);
 }
 
+// Send events.
 if (data.conversionName) {
-  teadsE({ conversionType: data.conversionName });
+  
+  event = {
+    conversionType: data.conversionName
+  };
+  
+  if (data.price && data.currency) {
+    event = { 
+      conversionType: data.conversionName,
+      price: data.price,
+      currency: data.currency
+    };
+  }
+  teadsE(event);
 }
+
+// Call data.gtmOnSuccess when the tag is finished.
+data.gtmOnSuccess();
+
+return event;
 
 
 ___WEB_PERMISSIONS___
@@ -403,7 +453,48 @@ ___WEB_PERMISSIONS___
 
 ___TESTS___
 
-scenarios: []
+scenarios:
+- name: Set Pixel ID - Universal Pixel
+  code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"base\",\n  accountType:\
+    \ \"tam\",\n};\n\nvar event = runCode(mockData);\n\nassertThat(event).isEqualTo({});\n\
+    assertApi('gtmOnSuccess').wasCalled();"
+- name: Set Pixel ID - Event based
+  code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"event\",\n  accountType:\
+    \ \"tam\",\n  conversionName: \"conversion test\",\n};\n\nvar event = runCode(mockData);\n\
+    \nassertThat(event.conversionType).isEqualTo(\"conversion test\");\nassertApi('gtmOnSuccess').wasCalled();"
+- name: Set Advertiser ID - Universal Pixel
+  code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"base\",\n  accountType:\
+    \ \"ms\",\n};\n\nvar event = runCode(mockData);\n\nassertThat(event).isEqualTo({});\n\
+    assertApi('gtmOnSuccess').wasCalled();"
+- name: Set Advertiser ID - Event based
+  code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"event\",\n  accountType:\
+    \ \"ms\",\n  conversionName: \"conversion test\",\n};\n\nvar event = runCode(mockData);\n\
+    \nassertThat(event.conversionType).isEqualTo(\"conversion test\");\nassertApi('gtmOnSuccess').wasCalled();"
+- name: Conversion parameters - Publish parameters when Event Based is set
+  code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"event\",\n  accountType:\
+    \ \"tam\",\n  conversionName: \"conversion test\",\n  price: \"23.4\",\n  currency:\
+    \ \"EUR\"\n};\n\nvar event = runCode(mockData);\n\nassertThat(event.conversionType).isEqualTo(\"\
+    conversion test\");\nassertThat(event.price).isEqualTo(\"23.4\");\nassertThat(event.currency).isEqualTo(\"\
+    EUR\");\n\nassertApi('gtmOnSuccess').wasCalled();"
+- name: Conversion parameters - Not publish if Universal Pixel is set
+  code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"event\",\n  accountType:\
+    \ \"tam\",\n  price: \"23.4\",\n  currency: \"EUR\"\n};\n\nvar event = runCode(mockData);\n\
+    \nassertThat(event).isEqualTo({});\n\nassertApi('gtmOnSuccess').wasCalled();"
+- name: Conversion parameters - Not publish conversion parameters if parameter currency
+    is missing
+  code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"event\",\n  accountType:\
+    \ \"tam\",\n  conversionName: \"conversion test\",\n  price: \"23.4\",\n};\n\n\
+    var event = runCode(mockData);\n\nassertThat(event.conversionType).isEqualTo(\"\
+    conversion test\");\nassertThat(event.price).isUndefined();\nassertThat(event.currency).isUndefined();\n\
+    \nassertApi('gtmOnSuccess').wasCalled();"
+- name: Conversion parameters - Not publish conversion parameters if currency is missingUntitled
+    test 8
+  code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"event\",\n  accountType:\
+    \ \"tam\",\n  conversionName: \"conversion test\",\n  currency: \"EUR\"\n};\n\n\
+    var event = runCode(mockData);\n\nassertThat(event.conversionType).isEqualTo(\"\
+    conversion test\");\nassertThat(event.price).isUndefined();\nassertThat(event.currency).isUndefined();\n\
+    \nassertApi('gtmOnSuccess').wasCalled();"
+setup: ''
 
 
 ___NOTES___
