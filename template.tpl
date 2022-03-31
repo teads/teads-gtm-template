@@ -47,7 +47,7 @@ ___TEMPLATE_PARAMETERS___
       },
       {
         "value": "ms",
-        "displayValue": "Advertiser ID"
+        "displayValue": "Legacy advertiser ID"
       }
     ],
     "simpleValueType": true
@@ -86,10 +86,67 @@ ___TEMPLATE_PARAMETERS___
       },
       {
         "value": "event",
-        "displayValue": "Event based Pixel"
+        "displayValue": "Advertiser event"
       }
     ],
     "simpleValueType": true
+  },
+  {
+    "type": "SELECT",
+    "name": "advertiserEventType",
+    "displayName": "Event to fire",
+    "macrosInSelect": false,
+    "selectItems": [
+      {
+        "value": "AddToCart",
+        "displayValue": "Add to Cart"
+      },
+      {
+        "value": "AddToWishlist",
+        "displayValue": "Add to Wishlist"
+      },
+      {
+        "value": "CompleteRegistration",
+        "displayValue": "Complete Registration"
+      },
+      {
+        "value": "InitiateCheckout",
+        "displayValue": "Initiate Checkout"
+      },
+      {
+        "value": "Lead",
+        "displayValue": "Lead"
+      },
+      {
+        "value": "Purchase",
+        "displayValue": "Purchase"
+      },
+      {
+        "value": "Search",
+        "displayValue": "Search"
+      },
+      {
+        "value": "ViewContent",
+        "displayValue": "View Content"
+      },
+      {
+        "value": "legacyConversion",
+        "displayValue": "Legacy conversion"
+      }
+    ],
+    "simpleValueType": true,
+    "enablingConditions": [
+      {
+        "paramName": "pixelType",
+        "paramValue": "event",
+        "type": "EQUALS"
+      }
+    ],
+    "valueValidators": [
+      {
+        "type": "NON_EMPTY"
+      }
+    ]
   },
   {
     "type": "TEXT",
@@ -99,8 +156,8 @@ ___TEMPLATE_PARAMETERS___
     "help": "Enter the name of the conversion, as created in Teads interface",
     "enablingConditions": [
       {
-        "paramName": "pixelType",
-        "paramValue": "event",
+        "paramName": "advertiserEventType",
+        "paramValue": "legacyConversion",
         "type": "EQUALS"
       }
     ],
@@ -180,15 +237,16 @@ if (data.disableFirstPartyCookie) {
 }
 
 // Send events.
-if (data.conversionName) {
+if (data.advertiserEventType) {
+  const conversionType = data.advertiserEventType === 'legacyConversion' ? data.conversionName : data.advertiserEventType;
   
   event = {
-    conversionType: data.conversionName
+    conversionType: conversionType
   };
   
   if (data.price && data.currency) {
     event = { 
-      conversionType: data.conversionName,
+      conversionType: conversionType,
       price: data.price,
       currency: data.currency
     };
@@ -460,21 +518,30 @@ scenarios:
     assertApi('gtmOnSuccess').wasCalled();"
 - name: Set Pixel ID - Event based
   code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"event\",\n  accountType:\
-    \ \"tam\",\n  conversionName: \"conversion test\",\n};\n\nvar event = runCode(mockData);\n\
-    \nassertThat(event.conversionType).isEqualTo(\"conversion test\");\nassertApi('gtmOnSuccess').wasCalled();"
+    \ \"tam\",\n  advertiserEventType: \"legacyConversion\",\n  conversionName: \"\
+    conversion test\",\n};\n\nvar event = runCode(mockData);\n\nassertThat(event.conversionType).isEqualTo(\"\
+    conversion test\");\nassertApi('gtmOnSuccess').wasCalled();"
 - name: Set Advertiser ID - Universal Pixel
   code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"base\",\n  accountType:\
     \ \"ms\",\n};\n\nvar event = runCode(mockData);\n\nassertThat(event).isEqualTo({});\n\
     assertApi('gtmOnSuccess').wasCalled();"
 - name: Set Advertiser ID - Event based
   code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"event\",\n  accountType:\
-    \ \"ms\",\n  conversionName: \"conversion test\",\n};\n\nvar event = runCode(mockData);\n\
-    \nassertThat(event.conversionType).isEqualTo(\"conversion test\");\nassertApi('gtmOnSuccess').wasCalled();"
-- name: Conversion parameters - Publish parameters when Event Based is set
+    \ \"ms\",\n  advertiserEventType: \"legacyConversion\",\n  conversionName: \"\
+    conversion test\",\n};\n\nvar event = runCode(mockData);\n\nassertThat(event.conversionType).isEqualTo(\"\
+    conversion test\");\nassertApi('gtmOnSuccess').wasCalled();"
+- name: Conversion parameters - Publish parameters when Legacy conversion is set
   code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"event\",\n  accountType:\
-    \ \"tam\",\n  conversionName: \"conversion test\",\n  price: \"23.4\",\n  currency:\
+    \ \"tam\",\n  advertiserEventType: \"legacyConversion\",\n  conversionName: \"\
+    conversion test\",\n  price: \"23.4\",\n  currency: \"EUR\"\n};\n\nvar event =\
+    \ runCode(mockData);\n\nassertThat(event.conversionType).isEqualTo(\"conversion\
+    \ test\");\nassertThat(event.price).isEqualTo(\"23.4\");\nassertThat(event.currency).isEqualTo(\"\
+    EUR\");\n\nassertApi('gtmOnSuccess').wasCalled();"
+- name: Conversion parameters - Publish parameters when Advertiser event is sehhht
+  code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"event\",\n  accountType:\
+    \ \"tam\",\n  advertiserEventType: \"AddToWishlist\",\n  price: \"23.4\",\n  currency:\
     \ \"EUR\"\n};\n\nvar event = runCode(mockData);\n\nassertThat(event.conversionType).isEqualTo(\"\
-    conversion test\");\nassertThat(event.price).isEqualTo(\"23.4\");\nassertThat(event.currency).isEqualTo(\"\
+    AddToWishlist\");\nassertThat(event.price).isEqualTo(\"23.4\");\nassertThat(event.currency).isEqualTo(\"\
     EUR\");\n\nassertApi('gtmOnSuccess').wasCalled();"
 - name: Conversion parameters - Not publish if Universal Pixel is set
   code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"event\",\n  accountType:\
@@ -483,12 +550,11 @@ scenarios:
 - name: Conversion parameters - Not publish conversion parameters if parameter currency
     is missing
   code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"event\",\n  accountType:\
-    \ \"tam\",\n  conversionName: \"conversion test\",\n  price: \"23.4\",\n};\n\n\
-    var event = runCode(mockData);\n\nassertThat(event.conversionType).isEqualTo(\"\
-    conversion test\");\nassertThat(event.price).isUndefined();\nassertThat(event.currency).isUndefined();\n\
-    \nassertApi('gtmOnSuccess').wasCalled();"
-- name: Conversion parameters - Not publish conversion parameters if currency is missingUntitled
-    test 8
+    \ \"tam\",\n  advertiserEventType: \"legacyConversion\",\n  conversionName: \"\
+    conversion test\",\n  price: \"23.4\",\n};\n\nvar event = runCode(mockData);\n\
+    \nassertThat(event.conversionType).isEqualTo(\"conversion test\");\nassertThat(event.price).isUndefined();\n\
+    assertThat(event.currency).isUndefined();\n\nassertApi('gtmOnSuccess').wasCalled();"
+- name: Conversion parameters - Not publish conversion parameters if currency is missing
   code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"event\",\n  accountType:\
     \ \"tam\",\n  conversionName: \"conversion test\",\n  currency: \"EUR\"\n};\n\n\
     var event = runCode(mockData);\n\nassertThat(event.conversionType).isEqualTo(\"\
