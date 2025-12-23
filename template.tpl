@@ -1,4 +1,4 @@
-___TERMS_OF_SERVICE___
+﻿___TERMS_OF_SERVICE___
 
 By creating or modifying this file you agree to Google Tag Manager's Community
 Template Gallery Developer Terms of Service available at
@@ -182,6 +182,13 @@ ___TEMPLATE_PARAMETERS___
       },
       {
         "type": "TEXT",
+        "name": "productName",
+        "displayName": "Product Name",
+        "simpleValueType": true,
+        "help": "Set the `product name` parameter when a user completes an action on-site that is valuable for your business."
+      },
+      {
+        "type": "TEXT",
         "name": "price",
         "displayName": "Price",
         "simpleValueType": true,
@@ -251,6 +258,10 @@ if (data.advertiserEventType) {
   
   if(data.name) {
     event.name = data.name;
+  }
+  
+  if(data.productName) {
+   event.productName = data.productName;
   }
   
   if (data.price && data.currency) {
@@ -539,8 +550,9 @@ scenarios:
 - name: Conversion parameters - Publish parameters when Advertiser Event is set
   code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"event\",\n  accountType:\
     \ \"tam\",\n  advertiserEventType: \"AddToWishlist\",\n  name: \"Nike Air\",\n\
-    \  price: \"23.4\",\n  currency: \"EUR\"\n};\n\nvar event = runCode(mockData);\n\
-    \nassertThat(event.name).isEqualTo(\"Nike Air\");\nassertThat(event.conversionType).isEqualTo(\"\
+    \  productName: \"Jordan\",\n  price: \"23.4\",\n  currency: \"EUR\"\n};\n\nvar\
+    \ event = runCode(mockData);\n\nassertThat(event.name).isEqualTo(\"Nike Air\"\
+    );\nassertThat(event.productName).isEqualTo(\"Jordan\");\nassertThat(event.conversionType).isEqualTo(\"\
     AddToWishlist\");\nassertThat(event.price).isEqualTo(\"23.4\");\nassertThat(event.currency).isEqualTo(\"\
     EUR\");\n\nassertApi('gtmOnSuccess').wasCalled();"
 - name: Conversion parameters - Not publish if Universal Pixel is set
@@ -561,6 +573,14 @@ scenarios:
     \ \"Nike Air\"\n};\n\nvar event = runCode(mockData);\n\nassertThat(event.conversionType).isEqualTo(\"\
     AddToCart\");\nassertThat(event.name).isEqualTo(\"Nike Air\");\nassertThat(event.price).isUndefined();\n\
     assertThat(event.currency).isUndefined();\n\nassertApi('gtmOnSuccess').wasCalled();"
+- name: Conversion parameters - Can publish converstion parameters without product
+    name
+  code: "const mockData = { \n  pixelId: \"1234\",\n  pixelType: \"event\",\n  accountType:\
+    \ \"tam\",\n  advertiserEventType: \"AddToWishlist\",\n  name: \"Nike Air\",\n\
+    \  price: \"23.4\",\n  currency: \"EUR\"\n};\n\nvar event = runCode(mockData);\n\
+    \nassertThat(event.name).isEqualTo(\"Nike Air\");\nassertThat(event.productName).isEqualTo(undefined);\n\
+    assertThat(event.conversionType).isEqualTo(\"AddToWishlist\");\nassertThat(event.price).isEqualTo(\"\
+    23.4\");\nassertThat(event.currency).isEqualTo(\"EUR\");\n\nassertApi('gtmOnSuccess').wasCalled();"
 setup: ''
 
 
