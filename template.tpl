@@ -130,6 +130,10 @@ ___TEMPLATE_PARAMETERS___
         "displayValue": "View Content"
       },
       {
+        "value": "AppInstall",
+        "displayValue": "App Install"
+      },
+      {
         "value": "legacyConversion",
         "displayValue": "Legacy conversion"
       }
